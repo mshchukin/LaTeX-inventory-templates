@@ -1,0 +1,71 @@
+%Custom AVERY 5160 sticky labels with QR-codes
+%Author: Mikhail Shchukin
+
+\documentclass{article}[letterpaper]
+
+%packages START here
+\usepackage[left=1.5cm, right=1.5cm, top=1.5cm, bottom=1.5cm]{geometry}
+\usepackage{qrcode}
+\usepackage{pgffor}
+\usepackage{readarray}
+\usepackage[newdimens]{labels} % all Avery-related stuff
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+
+%package use config
+\hyphenation{ex-am-ple} % hyphenations defined here as needed
+
+% AVERY 5160 setup
+\LabelCols=3% Number of columns of labels per page
+\LabelRows=10% Number of rows of labels per page
+\LeftPageMargin=5mm% These four parameters give the
+\RightPageMargin=5mm% page gutter sizes. The outer edges of
+\TopPageMargin=13mm% the outer labels are the specified
+\BottomPageMargin=13mm% distances from the edge of the paper.
+\InterLabelColumn=3mm% Gap between columns of labels
+\InterLabelRow=0mm% Gap between rows of labels
+\LeftLabelBorder=2mm% These four parameters give the extra
+\RightLabelBorder=2mm% space used around the text on each
+\TopLabelBorder=2mm% actual label.
+\BottomLabelBorder=2mm%
+%\numberoflabels=30 % good for repeating same label. for variable labels use foreach loop
+%\LabelGridtrue % uncomment this if you wanna see your borders. you don't have to print them
+
+
+%packages END here
+
+% read data from CSV spreadsheet
+\readarraysepchar{,}
+\readdef{data.csv}{\dat}
+\readarray\dat\data[-,\ncols]
+
+% CODE SNIPPETS (used for repeating actions)
+
+% Wrappers for array access
+\newcommand{\firstcol}[1]{\data[#1,1]}
+\newcommand{\secondcol}[1]{\data[#1,2]}
+\newcommand{\texty}[1]{Item One: \firstcol{#1} \\ Item Two: \secondcol{#1} \\ \vspace*{-2mm} Sequence \#:#1 \vspace*{-2mm} \hspace*{20mm} \qrcode[height=1cm,padding]{Data: \firstcol{#1}}}
+
+% CODE SNIPPETS (used for repeating actions)
+
+%main body is here%
+\begin{document}
+
+\LabelSetup% Invoke new settings
+
+% set font
+\fontfamily{zi4}\selectfont
+
+% foreach loop WON'T work because it uses LaTeX grouping
+%\foreach \n in {1,...,\nrows} {\genericlabel{\textbf{\texty{\n}}}}
+
+\pgfplotsforeachungrouped \m in {1,...,\nrows} { \addresslabel{ \textbf{\texty{\m}} } }
+
+%\begin{labels} % individual mode - for singleton labels
+%	\textbf{\texty{1}}
+%
+%	\textbf{\texty{2}}
+%
+%\end{labels}
+
+\end{document}

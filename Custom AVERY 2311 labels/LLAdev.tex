@@ -1,0 +1,71 @@
+%Custom AVERY 2311 sticky labels
+%Author: Mikhail Shchukin
+
+\documentclass{article}
+
+%packages START here
+\usepackage[margin=0cm,top=0in,bottom=0in,right=0in,left=0in,paperheight=6in, paperwidth=4in]{geometry} % 4x6-inch label sheet
+\usepackage{qrcode}
+\usepackage{pgffor}
+\usepackage{readarray}
+\usepackage[newdimens]{labels} % all Avery-related stuff
+\usepackage{pgfplots}
+%\pgfplotsset{compat=1.18}
+
+%package use config
+\hyphenation{ex-am-ple} % hyphenations defined here as needed
+
+% AVERY 2311 setup
+\LabelCols=4 % Number of columns of labels per page
+\LabelRows=9 % Number of rows of labels per page
+\LeftPageMargin=10mm % These four parameters give the
+\RightPageMargin=10mm % page gutter sizes. The outer edges of
+\TopPageMargin=13mm % the outer labels are the specified
+\BottomPageMargin=13mm % distances from the edge of the paper.
+\InterLabelColumn=2mm % Gap between columns of labels
+\InterLabelRow=0mm % Gap between rows of labels
+\LeftLabelBorder=0.5mm % These four parameters give the extra
+\RightLabelBorder=0.5mm % space used around the text on each
+\TopLabelBorder=0.5mm % actual label.
+\BottomLabelBorder=0.5mm %
+%\numberoflabels=36 % good for repeating same label. for variable labels use foreach loop
+%\LabelGridtrue % uncomment this if you wanna see your borders. you don't have to print them
+
+%packages END here
+
+% read data from CSV spreadsheet
+\readarraysepchar{,}
+\readdef{data.csv}{\dat}
+\readarray\dat\data[-,\ncols]
+
+% CODE SNIPPETS (used for repeating actions)
+
+% Wrappers for array access
+\newcommand{\firstcol}[1]{\data[#1,1]}
+\newcommand{\secondcol}[1]{\data[#1,2]}
+\newcommand{\texty}[1]{\firstcol{#1} \\ \secondcol{#1}}
+
+% CODE SNIPPETS (used for repeating actions)
+
+%main body is here%
+\begin{document}
+
+% Invoke new settings
+\LabelSetup
+
+% set font - optional
+% \fontfamily{zi4}\selectfont
+
+\fontsize{6}{10}
+
+% regular foreach loop WON'T work here - need ungrouped
+\pgfplotsforeachungrouped \m in {1,...,\nrows} { \addresslabel{ \textbf{\texty{\m}} } }
+
+%\begin{labels}
+%	\centering{\textbf{\texty{1}}}
+%	
+%	\centering{\textbf{\texty{2}}}
+%	
+%\end{labels}
+
+\end{document}

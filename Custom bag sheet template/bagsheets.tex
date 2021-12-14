@@ -1,0 +1,100 @@
+%Custom bagsheet template for organizational inventory management
+%Author: Mikhail Shchukin
+
+\documentclass{article}[letterpaper]
+
+%packages START here
+\usepackage{pdflscape}
+\usepackage{graphicx}
+\usepackage{mathtools}
+\usepackage[left=1.5cm, right=1.5cm, top=1.5cm, bottom=1.5cm]{geometry}
+\usepackage{qrcode}
+\usepackage{readarray}
+\usepackage{pgffor}
+
+%\catcode`\_=12 % uncomment in case you have issues with underscore chars
+
+%package use config
+\graphicspath{ {./img/} }
+\hyphenation{ex-am-ple} % hyphenations defined here as needed
+%packages END here
+
+% read data from CSV file
+\readarraysepchar{,}
+\readdef{data.csv}{\dat}
+\readarray\dat\data[-,\ncols]
+
+% Wrappers for array access
+\newcommand{\firstcol}[1]{\data[#1,1]}
+\newcommand{\secondcol}[1]{\data[#1,2]}
+
+% CODE SNIPPETS (used for repeating actions)
+
+%make a new bag sheet
+\newcommand{\makesheet}{
+
+% set font - optional
+% \fontfamily{zi4}\selectfont
+
+% remove page numbers
+\pagestyle{empty}
+
+% set page as landscape
+\begin{landscape}
+
+% logo header
+\begin{figure}[h]
+  	\includegraphics[width=0.2\textwidth]{img/logo.png}
+  	\label{fig:logo}
+\end{figure}
+
+\vspace{2cm} % vertical offset to center the printed information
+
+% increase font size and center it
+\centering 
+\fontsize{38}{10}
+
+% listing of the data entries
+\textbf{CSV column parameter one: \firstcol{\thepage}}
+
+\bigskip \bigskip
+
+\textbf{CSV column parameter two: \secondcol{\thepage}}
+
+\bigskip \bigskip
+
+% get QR code with data from CSV
+\qrcode[height=1in,padding]{ Data: \firstcol{\thepage} }
+
+\bigskip \bigskip
+
+% listing sheet number
+\textbf{Sheet \# \thepage }
+
+% now continue to footer - on the left bottom corner
+\vfill
+\raggedright 
+\noindent
+\Large % set footer font size
+\textbf{This is a footer \\
+Put your organization name here \\
+Put some address here \\
+Phone: 123-456-78-90 \\
+}
+
+\end{landscape}
+
+} % END of \makesheet
+
+%main body is here%
+\begin{document}
+
+% \nrows produces X amounts of sheets, where X is the amount of lines in file
+% may be hardcded as well to whatever value <= existing # of lines
+\foreach \x in {1,...,\nrows}
+{
+	\makesheet
+	\newpage
+}
+
+\end{document}

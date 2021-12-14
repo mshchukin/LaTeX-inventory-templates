@@ -1,0 +1,119 @@
+% Custom organizational QR-code template for contacts + events
+%Author: Mikhail Shchukin
+
+\documentclass{article}[letterpaper]
+
+%packages START here
+\usepackage{pdflscape}
+\usepackage{graphicx}
+\usepackage[left=0.5cm, right=0.5cm, top=0.5cm, bottom=0.5cm]{geometry}
+\usepackage{qrcode}
+\usepackage{readarray}
+\usepackage{pgffor}
+
+%package use config
+\graphicspath{ {./img/} }
+\hyphenation{ex-am-ple} % hyphenations defined here as needed
+%packages END here
+
+% read data from CSV spreadsheet
+\readarraysepchar{,}
+\readdef{data.csv}{\dat}
+\readarray\dat\data[-,\ncols]
+
+% Wrappers for array access
+\newcommand{\firstcol}[1]{\data[#1,1]}
+\newcommand{\secondcol}[1]{\data[#1,2]}
+\newcommand{\texty}[1]{\firstcol{#1} \\ \secondcol{#1}}
+
+% REMINDER VARIABLES
+\newcommand{\yr}{\firstcol{1}} 
+\newcommand{\mo}{\firstcol{2}} 
+\newcommand{\dy}{\firstcol{3}} 
+\newcommand{\datstart}{\yr \mo \dy T170000} 
+\newcommand{\datend}{\yr \mo \dy T170000}
+
+% CONTACT DETAILS
+\newcommand{\orgname}{Organization name}
+\newcommand{\name}{Full name}
+\newcommand{\fname}{First name}
+\newcommand{\hphone}{(123) 456-7890} % home phone
+\newcommand{\wphone}{(098) 765-4321} % work phone
+\newcommand{\ephone}{(123) 456-7890} % EXTRA phone
+\newcommand{\xphone}{Extra phone} % EXTRA phone LABEL
+\newcommand{\siteaddr}{https://www.website.com} % EXTRA phone LABEL
+
+% EVENT DETAILS
+\newcommand{\evsum}{Organization event summary}
+\newcommand{\evdesc}{Organization event description}
+
+
+% CODE SNIPPETS (used for repeating actions)
+
+%make a new bag sheet
+\newcommand{\makesheet}{} % END of \makesheet
+
+%main body is here%
+\begin{document}
+
+% set font - optional
+%\fontfamily{zi4}\selectfont
+
+% remove page numbers
+\pagestyle{empty}
+
+% increase font size and center it
+\centering 
+\fontsize{12}{10}
+
+%\fontfamily{zi4}\selectfont % get "console-style" font to differentiate O and 0 and other chars
+
+%\fontfamily{phv}\selectfont % get regular font back
+
+\
+
+\vspace{0.15\paperheight}
+
+\textbf{Organization contact}
+
+% get contact QR code
+\qrcode[height=1in,padding]{
+BEGIN:VCARD
+VERSION:3.0
+PRODID:-//Apple Inc.//iPhone OS 14.6//EN
+N:\name;;;;
+FN:\fname
+ORG:\orgname;
+TEL;type=HOME;type=VOICE;type=pref:\hphone
+TEL;type=WORK;type=VOICE:\wphone
+item1.TEL:\ephone
+item1.X-ABLabel:\xphone
+item2.URL;type=pref:\siteaddr
+item2.X-ABLabel:_$!<HomePage>!$_
+END:VCARD
+}
+
+\vspace{0.2\paperheight}
+
+\textbf{Organization event reminder}
+
+% get event reminder QR code - 25th of EACH month set here. to change, consult VEVENT documentation (good luck finding a decent one lol)
+\qrcode[height=1in,padding]{
+BEGIN:VEVENT
+SUMMARY:\evsum
+LOCATION:
+URL:
+DESCRIPTION:\evdesc
+DTSTART:\datstart
+DTEND:\datend
+RRULE:FREQ=MONTHLY;UNTIL=T000000Z;BYMONTHDAY=25
+BEGIN:VALARM
+TRIGGER:-PT0M
+ACTION:DISPLAY
+END:VALARM
+END:VEVENT
+}
+
+\textbf{Starting (YYYY MM DD): \yr \ \mo \ \dy}
+
+\end{document}
